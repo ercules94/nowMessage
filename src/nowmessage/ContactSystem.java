@@ -20,6 +20,8 @@ public class ContactSystem {
     
     private final LocalUser user = LocalUser.getInstance();
     
+    private final ContactViewer contactView = new ContactViewer();
+    
     /**
      * Constructor
      */
@@ -107,10 +109,35 @@ public class ContactSystem {
     
     /**
      * Questo metodo permette di prelevare la lista dei contatti dal LocalUser
-     * @return la lista contatti
+     * @return la lista contatti del LocalUser
      */
     public ArrayList<Contact> getContactList(){
-        return user.getContactList(); //rende la lista contatti presente nel local user
+        return user.getContactList();
+    }
+    
+    /**
+     * Questo metodo richiama la vista dei contatti per permettere la visualizzazione della rubrica
+     */
+    public void showContactList(){
+        contactView.showContactList(getContactList());
+    }
+    
+    /**
+     * Questo metodo permette di selezionare uno o più contatti dalla rubrica
+     * @return la lista dei contatti selezionati
+     */
+    public ArrayList<Contact> selectContact(){
+        ArrayList<Contact> list = user.getContactList(); //contiene la rubrica
+        ArrayList<Integer> positionSelectedContact; //conterrà le posizioni dei contatti selezionati
+        ArrayList<Contact> contactSelected = new ArrayList(); //conterrà i contatti selezionati
+        
+        positionSelectedContact = contactView.showContactSelector(list);
+        
+        for(Integer num : positionSelectedContact){
+            contactSelected.add(list.get(num-1));
+        }
+                
+        return contactSelected;
     }
     
     

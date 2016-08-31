@@ -5,6 +5,8 @@
  */
 package nowmessage;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Mrk
@@ -15,6 +17,8 @@ package nowmessage;
 public class MessageSystem {
     
     private static MessageSystem messageController;
+    
+    private final MessageViewer msgView = new MessageViewer();
     
     /**
      * constructor
@@ -37,29 +41,56 @@ public class MessageSystem {
     }
     
     /**
-     * Questo metodo permette di creare un messaggio di testo
-     * @param sender indica il mittente
-     * @param receiver indica il destinatario
+     * Questo metodo permette di creare un messaggio di testo legato ad un elenco di destinatari a partire da un gruppo
+     * @param receivers indica il destinatario
      * @param text indica il testo del messaggio
      * @return il messaggio creato
      */
-    public Message newMessage(Contact sender, Contact receiver, String text){
-        //1- richiamare costruttore della classe messaggio
-        return null;
+    public Sending newMessage(Group receivers, String text){
+        
+        return new Sending(receivers.getContactList(),new Message(text));
     }
     
     /**
-     * Questo metodo permette di creare un messaggio multimediale
-     * @param sender indica il mittente
-     * @param receiver indica il destinatario
+     * Questo metodo permette di creare un messaggio di testo legato ad un elenco di destinatari
+     * @param receivers indica i destinatari
      * @param text indica il testo del messaggio
-     * @param attachment indica il media l'allegato
      * @return il messaggio creato
      */
-    public Message newMessage(Contact sender, Contact receiver, String text, Media attachment){
-        //1- richiamare il costruttore della classe messaggio
-        return null;
+    public Sending newMessage(ArrayList<Contact> receivers, String text){
+    
+        return new Sending(receivers,new Message(text));
     }
+    
+    
+    /**
+     * Questo metodo permette di creare un messaggio multimediale legato ad un elenco di destinatari a partire da un gruppo
+     * @param receivers indica il destinatario
+     * @param text indica il testo del messaggio
+     * @param attachment indica il media allegato
+     * @return il messaggio creato
+     */
+    public Sending newMessage(Group receivers, String text, Media attachment){
+        
+        Sending sending = this.newMessage(receivers, text);
+        sending.getMessage().setAttachment(attachment);
+        return sending;
+    }
+    
+    /**
+     * Questo metodo permette di creare un messaggio multimediale legato ad un elenco di destinatari
+     * @param receivers indica i destinatari
+     * @param text indica il testo del messaggio
+     * @param attachment indica il media allegato
+     * @return il messaggio creato
+     */
+    public Sending newMessage(ArrayList<Contact> receivers, String text, Media attachment){
+        
+        Sending sending = this.newMessage(receivers, text);
+        sending.getMessage().setAttachment(attachment);
+        return sending;
+    }
+    
     
     /**
      * Questo metodo permette di eliminare un messaggio
@@ -70,10 +101,13 @@ public class MessageSystem {
     
     /**
      * Questo metodo permette di inviare un messaggio precedentemente creato
-     * @param msg indica il messaggio da creare
+     * @param sending contiene il messaggio da inviare ed i destinatari
+     * @return boolean 
      */
-    public void sendMessage(Message msg){
+    public Boolean sendMessage(Sending sending){
+        ServerCommunicationSystem server = ServerCommunicationSystem.getInstance();
         
+        return server.sendMsg(sending);
     }
     
     /**
@@ -104,5 +138,28 @@ public class MessageSystem {
         
     }
     
+    /**
+     * Questo metodo permette di selezionare il tipo di destinatario di un messaggio
+     * @return il tipo selezionato
+     */
+    public Integer selectTypeOfReceiver(){
+        return msgView.showTypeOfReceiverSelector();
+    }
     
+    /**
+     * Questo metodo richiama la vista dei messaggi per permettere all'utente di scrivere il testo
+     * di un messaggio
+     * @return il testo scritto
+     */
+    public String writeMsgText(){
+        return msgView.showTextBox();
+    }
+    
+    /**
+     * Questo metodo richiama la vista dei messaggi in modo da mostrare il risultato dell'invio
+     * @param result indica il risultato d'invio
+     */
+    public void showSendResult(boolean result){
+        msgView.showSendResult(result);
+    }
 }
